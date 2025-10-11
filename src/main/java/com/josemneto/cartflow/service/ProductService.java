@@ -3,12 +3,11 @@ package com.josemneto.cartflow.service;
 import com.josemneto.cartflow.dto.ProductDTO;
 import com.josemneto.cartflow.entities.Product;
 import com.josemneto.cartflow.repositories.ProductRepository;
+import com.josemneto.cartflow.service.exceptions.ResourceNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 public class ProductService {
@@ -21,10 +20,9 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public ProductDTO findById(Long id) {
-        Optional<Product> result = repository.findById(id);
-        Product product = result.get();
-        ProductDTO dto = new ProductDTO(product);
-        return dto;
+        Product product = repository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("Resource not found."));
+        return new ProductDTO(product);
     }
 
     @Transactional(readOnly = true)
